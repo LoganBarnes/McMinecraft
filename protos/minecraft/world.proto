@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "requests.proto";
+import "updates.proto";
+
+package minecraft;
+
+service World {
+    rpc ModifyWorld (WorldActionRequest) returns (Result);
+    rpc WorldUpdates (ClientData) returns (stream WorldUpdate);
+
+    rpc MetadataUpdates (google.protobuf.Empty) returns (stream Metadata);
+}
+
+message Result {
+    oneof result {
+        Success success = 1;
+        Error error = 2;
+    }
+}
+
+message Success {
+}
+
+message Error {
+    string error_message = 1;
+}
+
+message ClientData {
+    string name = 1;
+    bool send_existing_state = 2;
+}
+
+message Metadata {
+    repeated string client_names = 1;
+    uint64 total_blocks = 2;
+}
