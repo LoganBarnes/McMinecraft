@@ -42,10 +42,4 @@ static_resources:
       type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
-      hosts:
-        [
-          {
-            socket_address:
-              { address: REPLACE_WITH_HOST, port_value: REPLACE_WITH_PORT },
-          },
-        ]
+      hosts: [{ socket_address: { address: localhost, port_value: 9090 } }]

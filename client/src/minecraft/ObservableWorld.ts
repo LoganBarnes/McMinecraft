@@ -4,8 +4,8 @@ import Observer from '@/minecraft/Observer';
 import { Viewer } from '@/minecraft/Viewer';
 import GameLoop from '@/engine/GameLoop';
 import SharedState from '@/engine/SharedState';
-import { WorldUpdate, BlockAdded } from '@gen/minecraft/updates_pb';
-import { Block, IVec3 } from '@gen/minecraft/components_pb';
+import { WorldUpdate, BlockAdded } from '@gen/updates_pb';
+import { Block, IVec3 } from '@gen/components_pb';
 
 // TODO move this to a util class
 function fromProto(proto: IVec3 | undefined): vec3 {

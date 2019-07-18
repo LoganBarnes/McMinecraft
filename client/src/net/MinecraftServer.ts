@@ -1,17 +1,10 @@
-import {
-  WorldClient,
-  ResponseStream,
-  Status,
-  ServiceError,
-} from '@gen/minecraft/world_pb_service';
-import {
-  WorldActionRequest,
-  AddAdjacentBlockRequest,
-} from '@gen/minecraft/requests_pb';
-import { ClientData, Errors, Metadata } from '@gen/minecraft/world_pb';
-import { WorldUpdate } from '@gen/minecraft/updates_pb';
+import { WorldClient } from '@gen/WorldServiceClientPb';
+import { Error } from 'grpc-web';
+import { WorldActionRequest, AddAdjacentBlockRequest } from '@gen/requests_pb';
+import { ClientData, Errors, Result, Metadata } from '@gen/world_pb';
+import { WorldUpdate } from '@gen/updates_pb';
 import { v4 as uuid } from 'uuid';
-import { Block, IVec3, BlockFace } from '@gen/minecraft/components_pb';
+import { Block, IVec3, BlockFace } from '@gen/components_pb';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 
 class MinecraftServer {
@@ -62,16 +55,24 @@ class MinecraftServer {
     const action: WorldActionRequest = new WorldActionRequest();
     action.setAddAdjacentBlock(request);
 
-    this.client.modifyWorld(
-      action,
-      (error: ServiceError | null, response: Errors | null) => {
-        if (error) {
-          throw new Error(error.message); // temporary
-        } else if (response && response.getErrorMessage()) {
-          throw new Error(response.getErrorMessage()); // temporary
+    this.client.modifyWorld(action, null, (err: Error, response: Result) => {
+      // TODO: Display errors instead of throwing
+      if (err) {
+        throw err;
+      } else if (response) {
+        switch (response.getResultCase()) {
+          case Result.ResultCase.SUCCESS:
+            return;
+
+          case Result.ResultCase.ERROR:
+            throw new Error((response.getError() as Errors).getErrorMessage());
+
+          case Result.ResultCase.RESULT_NOT_SET:
+            break;
         }
+        throw new Error('Server response not set properly');
       }
-    );
+    });
   }
 
   set metadataCallback(callback: (metadata: Metadata) => void) {
