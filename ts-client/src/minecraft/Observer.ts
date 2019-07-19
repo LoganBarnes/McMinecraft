@@ -1,7 +1,9 @@
+// deps
 import { CameraMover, Camera } from 'ts-graphics';
+import { vec2, vec3 } from 'gl-matrix';
+// minecraft
 import { Viewer } from '@/minecraft/Viewer';
 import ViewerUtil from '@/minecraft/ViewerUtil';
-import { vec2, vec3 } from 'gl-matrix';
 
 /**
  * Current movement type based on what buttons are down.

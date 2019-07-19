@@ -40,9 +40,9 @@ class MinecraftWorld {
 public:
     MinecraftWorld();
 
-    minecraft::Error add_adjacent_block(const minecraft::Block& existing_block,
-                                        const minecraft::BlockFace& adjacent_direction,
-                                        minecraft::Block* adj_block);
+    minecraft::Errors add_adjacent_block(const minecraft::Block& existing_block,
+                                         const minecraft::BlockFace& adjacent_direction,
+                                         minecraft::Block* adj_block);
 
     const std::unordered_set<std::tuple<int, int, int>>& blocks() const;
 

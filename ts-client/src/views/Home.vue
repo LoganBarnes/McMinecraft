@@ -24,8 +24,8 @@
       <div v-else>
         <h4>Blocks: {{ totalBlocks }}</h4>
         <h3>Clients:</h3>
-        <li v-for="client in clients" :key="client[0]">
-          {{ client[1] }}
+        <li v-for="client in clients" :key="client">
+          {{ client }}
         </li>
       </div>
     </div>
@@ -33,12 +33,15 @@
 </template>
 
 <script lang="ts">
+// deps
 import { Component, Watch, Vue } from 'vue-property-decorator';
+import { Status } from 'grpc-web';
+// generated
+import { Metadata } from '@gen/world_pb';
+// project
 import Canvas3d from '@/components/Canvas.vue';
 import ObservableWorld from '@/minecraft/ObservableWorld';
 import MinecraftServer from '@/net/MinecraftServer';
-import { Metadata } from '@gen/minecraft/world_pb';
-import { Status } from '@gen/minecraft/world_pb_service';
 
 @Component({
   components: {
@@ -50,7 +53,7 @@ export default class Home extends Vue {
   private server: MinecraftServer = new MinecraftServer(true);
   private serverConnectionErrors: string = '';
   private totalBlocks: number = 0;
-  private clients: string[][] = [];
+  private clients: string[] = [];
 
   public mounted() {
     const canvas: Canvas3d = this.$refs.canvas as Canvas3d;
@@ -77,7 +80,7 @@ export default class Home extends Vue {
    */
   public handleMetadata(metadata: Metadata) {
     this.totalBlocks = metadata.getTotalBlocks();
-    this.clients = metadata.getClientsMap().getEntryList();
+    this.clients = metadata.getClientNamesList();
   }
 
   /**

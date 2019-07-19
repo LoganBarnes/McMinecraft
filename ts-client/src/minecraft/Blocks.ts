@@ -1,6 +1,5 @@
+// deps
 import { vec3 } from 'gl-matrix';
-import blocksVert from 'ts-shader-loader!@/assets/shaders/blocks.vert';
-import debugFrag from 'ts-shader-loader!@/assets/shaders/debug.frag';
 import {
   Cube,
   GLUtils,
@@ -10,7 +9,11 @@ import {
   Renderable,
   Scene,
 } from 'ts-graphics';
+// minecraft
 import { VertexArray } from '@/graphics/VertexArray';
+// shaders
+import blocksVert from 'ts-shader-loader!@/assets/shaders/blocks.vert';
+import debugFrag from 'ts-shader-loader!@/assets/shaders/debug.frag';
 
 /**
  * A single Minecraft block.

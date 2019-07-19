@@ -10,3 +10,7 @@ message WorldUpdate {
         Block block_removed = 2;
     }
 }
+
+message WorldState {
+    repeated Block blocks = 1;
+}

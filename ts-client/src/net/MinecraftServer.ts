@@ -1,18 +1,19 @@
+import { Error, ClientReadableStream, Status } from 'grpc-web';
+import { v4 as uuid } from 'uuid';
+import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
+// generated
 import { WorldClient } from '@gen/WorldServiceClientPb';
-import { Error } from 'grpc-web';
 import { WorldActionRequest, AddAdjacentBlockRequest } from '@gen/requests_pb';
 import { ClientData, Errors, Result, Metadata } from '@gen/world_pb';
-import { WorldUpdate } from '@gen/updates_pb';
-import { v4 as uuid } from 'uuid';
 import { Block, IVec3, BlockFace } from '@gen/components_pb';
-import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
+import { WorldUpdate, WorldState } from '@gen/updates_pb';
 
 class MinecraftServer {
   private client: WorldClient = new WorldClient(
     'http://' + process.env.VUE_APP_PROXY_ADDRESS
   );
-  private metadataStream: ResponseStream<Metadata> | null = null;
-  private updateStream: ResponseStream<WorldUpdate>;
+  private metadataStream: ClientReadableStream<Metadata> | null = null;
+  private updateStream: ClientReadableStream<WorldUpdate>;
   private userMetadataCallback: (metadata: Metadata) => void;
   private userUpdateCallback: (update: WorldUpdate) => void;
   private userStatusCallback: (update: Status) => void;
@@ -26,10 +27,30 @@ class MinecraftServer {
     if (streamMetadata) {
       this.metadataStream = this.client.metadataUpdates(new Empty());
 
+      // this.metadataStream.on('error', this.processError.bind(this));
       this.metadataStream.on('data', this.processMetadata.bind(this));
-      // this.metadataStream.on('end', this.processEndStream.bind(this));
       this.metadataStream.on('status', this.processStatus.bind(this));
+      // this.metadataStream.on('end', this.processEndStream.bind(this));
     }
+
+    // Get the initial state
+    this.client.getCurrentState(
+      new Empty(),
+      null,
+      (err: Error, response: WorldState) => {
+        // TODO: Display errors instead of throwing
+        if (err) {
+          throw err;
+        } else if (response) {
+          const blocks = response.getBlocksList();
+          const worldUpdate = new WorldUpdate();
+          blocks.forEach((block: Block) => {
+            worldUpdate.setBlockAdded(block);
+            this.processUpdate(worldUpdate);
+          });
+        }
+      }
+    );
 
     // Set up the world update stream
     const id: string = uuid();
@@ -39,9 +60,10 @@ class MinecraftServer {
 
     this.updateStream = this.client.worldUpdates(clientData);
 
+    // this.updateStream.on('error', this.processError.bind(this));
     this.updateStream.on('data', this.processUpdate.bind(this));
-    // this.updateStream.on('end', this.processEndStream.bind(this));
     this.updateStream.on('status', this.processStatus.bind(this));
+    // this.updateStream.on('end', this.processEndStream.bind(this));
   }
 
   public addBlock(existingBlockPosition: IVec3, blockFace: BlockFace) {

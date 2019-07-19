@@ -4,7 +4,7 @@ import Observer from '@/minecraft/Observer';
 import { Viewer } from '@/minecraft/Viewer';
 import GameLoop from '@/engine/GameLoop';
 import SharedState from '@/engine/SharedState';
-import { WorldUpdate, BlockAdded } from '@gen/updates_pb';
+import { WorldUpdate } from '@gen/updates_pb';
 import { Block, IVec3 } from '@gen/components_pb';
 
 // TODO move this to a util class
@@ -40,11 +40,7 @@ class ObservableWorld {
   public handleServerUpdate(update: WorldUpdate) {
     switch (update.getUpdateCase()) {
       case WorldUpdate.UpdateCase.BLOCK_ADDED: {
-        const blockAdded = update.getBlockAdded() as BlockAdded;
-        let block: Block = new Block();
-        if (blockAdded.hasBlock()) {
-          block = blockAdded.getBlock() as Block;
-        }
+        const block = update.getBlockAdded() as Block;
         this.world.addBlock(fromProto(block.getPosition()));
         break;
       }

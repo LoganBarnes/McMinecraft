@@ -25,6 +25,7 @@ MinecraftServer::MinecraftServer(unsigned port)
                                              // register client
                                              *metadata_.add_client_names() = client.name();
                                              metadata_stream_->write(metadata_);
+                                             std::cout << "Client '" << client.name() << "' connected" << std::endl;
                                          },
                                          [this](const minecraft::ClientData& client) {
                                              // unregister client
@@ -32,6 +33,7 @@ MinecraftServer::MinecraftServer(unsigned port)
                                              clients->erase(std::find(clients->begin(), clients->end(), client.name()),
                                                             clients->end());
                                              metadata_stream_->write(metadata_);
+                                             std::cout << "Client '" << client.name() << "' disconnected" << std::endl;
                                          });
     /*
      * World Modification Actions
@@ -39,6 +41,17 @@ MinecraftServer::MinecraftServer(unsigned port)
     server_->register_async(&Service::RequestModifyWorld,
                             [this](const minecraft::WorldActionRequest& request, minecraft::Result* result) {
                                 return modify_world(request, result);
+                            });
+
+    server_->register_async(&Service::RequestGetCurrentState,
+                            [this](const google::protobuf::Empty& /*ignored*/, minecraft::WorldState* state) {
+                                for (const auto& block : world_.blocks()) {
+                                    minecraft::Block* proto_block = state->add_blocks();
+                                    proto_block->mutable_position()->set_x(std::get<0>(block));
+                                    proto_block->mutable_position()->set_y(std::get<1>(block));
+                                    proto_block->mutable_position()->set_z(std::get<2>(block));
+                                }
+                                return grpc::Status::OK;
                             });
 }
 

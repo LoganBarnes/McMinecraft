@@ -48,14 +48,14 @@ MinecraftWorld::MinecraftWorld() {
     blocks_.emplace(std::make_tuple(0, 0, 0));
 }
 
-minecraft::Error MinecraftWorld::add_adjacent_block(const minecraft::Block& existing_block,
-                                                    const minecraft::BlockFace& adjacent_direction,
-                                                    minecraft::Block* adj_block) {
+minecraft::Errors MinecraftWorld::add_adjacent_block(const minecraft::Block& existing_block,
+                                                     const minecraft::BlockFace& adjacent_direction,
+                                                     minecraft::Block* adj_block) {
 
     auto block_tuple = from_proto(existing_block.position());
 
     if (blocks_.find(block_tuple) == blocks_.end()) {
-        minecraft::Error error{};
+        minecraft::Errors error{};
         error.set_error_message("Existing block does not exist");
         return error;
     }
@@ -64,7 +64,7 @@ minecraft::Error MinecraftWorld::add_adjacent_block(const minecraft::Block& exis
     auto adj_tuple = from_proto(adj_block->position());
 
     if (blocks_.find(adj_tuple) != blocks_.end()) {
-        minecraft::Error error{};
+        minecraft::Errors error{};
         error.set_error_message("Adjacent block already exists");
         return error;
     }

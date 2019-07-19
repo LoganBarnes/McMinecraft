@@ -10,6 +10,8 @@ service World {
   rpc ModifyWorld(WorldActionRequest) returns (Result);
   rpc WorldUpdates(ClientData) returns (stream WorldUpdate);
 
+  rpc GetCurrentState(google.protobuf.Empty) returns (WorldState);
+
   rpc MetadataUpdates(google.protobuf.Empty) returns (stream Metadata);
 }
 

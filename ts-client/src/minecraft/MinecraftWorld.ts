@@ -1,5 +1,7 @@
+// deps
 import { Scene, GLUtils, Camera } from 'ts-graphics';
 import { vec3 } from 'gl-matrix';
+// generated
 import Blocks from '@/minecraft/Blocks';
 
 class MinecraftWorld {
@@ -15,8 +17,8 @@ class MinecraftWorld {
     this.scene.addItemToRender(this.blocks);
   }
 
-  public update(timestep: number): void {
-    this.scene.onUpdate(timestep);
+  public update(timeStep: number): void {
+    this.scene.onUpdate(timeStep);
   }
 
   public render(camera: Camera): void {
