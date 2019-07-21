@@ -3,10 +3,6 @@ include(FetchContent)
 ###################
 ### McMinecraft ###
 ###################
-### Threads ###
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-
 ### gRPC Wrapper Library ###
 FetchContent_Declare(
         grpcw_dl
