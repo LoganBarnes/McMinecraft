@@ -40,5 +40,5 @@ popd
 pushd ts-client
 yarn
 yarn generate
-yarn build
+# yarn build # need to add protoc-gen-grpc-web to docker image first
 popd
